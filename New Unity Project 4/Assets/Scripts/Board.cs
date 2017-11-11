@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
+[RequireComponent(typeof(BoardShuffler))] // this is to let the exchange between boardshuffler and this script to take place
 public class Board : MonoBehaviour {
 
 
@@ -23,6 +25,9 @@ public class Board : MonoBehaviour {
 	//keeping track of gamepieces
 	GamePiece[,] m_allGamePieces;
 
+	//to reference the boardshuffler component
+	BoardShuffler m_boardShuffler;
+
 
 	// Use this for initialization
 	void Start () {
@@ -41,8 +46,13 @@ public class Board : MonoBehaviour {
 
 		//to fill the board with random dots
 		FillRandom();
+
+		//to assign boardshuffling
+		m_boardShuffler = GetComponent<BoardShuffler>();
 	}
-	
+
+
+
 	//creating a method to set up tile grid
 	void SetupTiles()
 	{
@@ -178,6 +188,56 @@ public class Board : MonoBehaviour {
 		//now to actually move it between the clicked and target gamepieces
 		clickedPiece.Move(targetTile.xIndex, targetTile.yIndex, swapTime); //this will move the clicked gamepiece to the target gamepiece position
 		targetPiece.Move(clickedTile.xIndex, clickedTile.yIndex, swapTime); //this will moved the target gamepiece to the clicked gamepiece position
+
+
+	}
+
+
+	//to fill gamepiece array with preset list of gamepieces
+	void FillBoardFromList (List<GamePiece> gamePieces)
+	{
+
+		//converting gamepieces to different collection structure
+		//using queue because it uses first in and first out feature
+		Queue<GamePiece> unusedPieces = new Queue<GamePiece> (gamePieces);
+
+		//this is done to avoid running the loop infinitely
+		int maxIterations = 100;
+		int iterations = 0;
+
+		for (int i = 0; i < width; i++) {
+			for (int j = 0; j < height; j++) {
+
+				if (m_allGamePieces [i, j] == null) { //to check if there is empty space
+
+					//to get the next game piece from unused pieces using dequeue
+					m_allGamePieces[i,j]=unusedPieces.Dequeue();
+
+					//set the iteration value back to zero
+					iterations=0;
+
+				}
+
+			}
+		}
+
+	}
+
+	//using the method and putting it in shuffleboard method. its like saying: "ShuffleBoard! Here, take it."
+	public void ShuffleBoard ()
+	{
+
+		//to gather list of normal gamepieces on the board
+		List<GamePiece> normalPieces = m_boardShuffler.RemoveNormalPieces(m_allGamePieces);
+
+		//shuffling the list that is taken using the method from BoardShuffler
+		m_boardShuffler.ShuffleList(normalPieces);
+
+		//using the list of shuffled pieces in FillBoard from the list method and then fills the array randomly
+		FillBoardFromList(normalPieces);
+
+		//since now array is filled up, move everything to its proper place
+		m_boardShuffler.MovePieces(m_allGamePieces, swapTime);
 
 
 	}
