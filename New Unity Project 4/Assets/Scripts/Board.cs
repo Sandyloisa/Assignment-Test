@@ -30,7 +30,7 @@ public class Board : MonoBehaviour {
 	public GameObject[] gamePiecePrefabs;
 
 	//to control the speed os switching or moving of gamepiece
-	public float swapTime=0.5f;
+	float swapTime=0.5f;
 
 	Tile[,] m_allTiles; //creating 2D array of tiles
 	//keeping track of gamepieces
@@ -196,12 +196,7 @@ public class Board : MonoBehaviour {
 		}
 	}
 
-	void ClearPieceAt (List<GamePiece> gamePieces)
-	{
-		foreach (GamePiece piece in gamePieces) {
-			ClearPieceAt(piece.xIndex, piece.yIndex);
-		}
-	}
+
 
 
 	void ClearBoard()
@@ -351,32 +346,61 @@ public class Board : MonoBehaviour {
 	Tile m_targetTile;
 
 	//to allow clicking to happen
-	public void ClickTile(Tile tile)
+	public void ClickTile(Tile tile)//mouseDown
 	{
+		//Debug.Log(m_clickedTile+","+m_targetTile);
 		if (m_clickedTile == null) {
 			m_clickedTile = tile; //m_clickedtile will be equal to the tile object that we pass in this method only when no other tile is clicked
 		}
+
 	}
 
 	// to allow dragging to happen
-	public void DragToTile(Tile tile)
+	public void DragToTile (Tile tile)//mouseEnter
 	{
+		//Debug.Log("Clicked: "+m_clickedTile+" Target: "+m_targetTile);
 		if (m_clickedTile != null) { //checks if there is valid clicked tile, then target is set. This is taken from previous method of clicktile
-			m_targetTile = tile; 
+			m_targetTile = tile;
+			SwitchTiles (m_clickedTile, m_targetTile);
+			m_clickedTile = tile;
+
+			//m_targetTile = null;
 		}
+
+
+
 	}
 
-	//when mouse button is released
-	public void ReleaseTile()
+	public void ReplaceTile (Tile tile)
 	{
+		//Debug.Log("Replacing");
+	}
+
+
+
+	//when mouse button is released
+	public void ReleaseTile()//mouseUp
+	{
+		//Debug.Log(m_clickedTile+","+m_targetTile);
 		if (m_clickedTile != null && m_targetTile != null) { //check to see if there are two valid tiles, switching will take place
-			SwitchTiles(m_clickedTile, m_targetTile);
+			//SwitchTiles(m_clickedTile, m_targetTile);
 		}
 
 		//when mouse button is released, its going to reset
 		m_clickedTile = null;
 		m_targetTile = null;
 	}
+
+	void Update ()
+	{
+		
+
+	}
+
+
+
+
+
 
 	public int readjusting=1;
 
@@ -606,7 +630,6 @@ public class Board : MonoBehaviour {
 			}
 
 		}
-
 	}
 
 	//to fill gamepiece array with preset list of gamepieces
@@ -655,8 +678,5 @@ public class Board : MonoBehaviour {
 
 
 
-	void Update ()
-	{
-	//Debug.Log(width);
-	}
+
 }

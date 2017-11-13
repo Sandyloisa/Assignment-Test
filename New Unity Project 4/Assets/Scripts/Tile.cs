@@ -33,12 +33,21 @@ public class Tile : MonoBehaviour {
 
 	}
 
+
+	Vector3 screenPoint;
+	Vector3  offset;
+	Vector3  curScreenPoint;
+	Vector3 curPosition;
 	//clicking a tile and setting it as an active one
 	void OnMouseDown()
 	{
+		
 		if (m_board != null) {
 			m_board.ClickTile (this);
+
 		}
+
+
 	}
 
 	//if activeTile is clicked and dragged to another tile, then new tile is set as target tile
@@ -46,8 +55,27 @@ public class Tile : MonoBehaviour {
 	{
 		if (m_board != null) {
 			m_board.DragToTile (this);
+
+
 		}
+
+
 	}
+
+
+
+	void OnMouseExit ()
+	{
+		
+	}
+
+	void OnMouseOver()
+	{
+		
+	}
+
+
+
 
 	//if targetTile is adjacent to checkedTile, then switch or swap takes place. clickedTile and targetTile is cleared once the mouse button is released
 	void OnMouseUp()
@@ -55,5 +83,7 @@ public class Tile : MonoBehaviour {
 		if (m_board != null) {
 			m_board.ReleaseTile ();
 		}
+
+
 	}
 }
