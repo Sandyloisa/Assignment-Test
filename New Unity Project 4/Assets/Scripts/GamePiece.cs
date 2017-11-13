@@ -90,7 +90,7 @@ public class GamePiece : MonoBehaviour { // this class will be very similar to t
 
 			float t = Mathf.Clamp(elapsedTime / timeToMove, 0f, 1f); //t=1 when reached to the end position and t=0 when starts
 
-			t=t*t*t*(6*t*t-15*t+10); // this is just to get a very smooth transition of position during the lerping
+			t=t*t*t*(6*t*t-15*t+10); // this is just to get a very smooth transition of position during the lerping. Very good thing
 
 			transform.position = Vector3.Lerp (startPosition, destination,t); //to make it lerp from startposition to end position and t is used to control lerping
 			//when t=0, it puts in the startposition and when t=1, it puts in the destination position

@@ -4,12 +4,24 @@ using UnityEngine;
 
 
 [RequireComponent(typeof(BoardShuffler))] // this is to let the exchange between boardshuffler and this script to take place
+
 public class Board : MonoBehaviour {
 
 
 	//to determine the dimension of board
 	public int width;
 	public int height;
+
+	int minWidth=1;
+	int maxWidth=10;
+	int minHeight=1;
+	int maxHeight=10;
+
+
+	public void SlideChange (float someValue)
+	{
+		//Debug.Log(someValue);
+	}
 
 	//to set the border of from the edge of tilegroup
 	public float borderSize;
@@ -179,19 +191,236 @@ public class Board : MonoBehaviour {
 		m_targetTile = null;
 	}
 
+	public int readjusting=1;
+
+	public void Toggle_Changed (bool someValue)
+	{
+		if (someValue == true) {
+			readjusting = 1;
+		} else {
+			readjusting=0;
+		}
+	}
 	//actual swapping to take place
-	void SwitchTiles(Tile clickedTile, Tile targetTile) //taking two tiles as arguments
+	public void SwitchTiles (Tile clickedTile, Tile targetTile) //taking two tiles as arguments
 	{
 		GamePiece clickedPiece = m_allGamePieces [clickedTile.xIndex, clickedTile.yIndex]; //getting the clicked gamepiece
 		GamePiece targetPiece = m_allGamePieces [targetTile.xIndex, targetTile.yIndex]; //getting the target gamepiece
 
-		//now to actually move it between the clicked and target gamepieces
-		clickedPiece.Move(targetTile.xIndex, targetTile.yIndex, swapTime); //this will move the clicked gamepiece to the target gamepiece position
-		targetPiece.Move(clickedTile.xIndex, clickedTile.yIndex, swapTime); //this will moved the target gamepiece to the clicked gamepiece position
 
+		if (readjusting == 0) {//swapping feature
+			//now to actually move it between the clicked and target gamepieces
+			clickedPiece.Move(targetTile.xIndex, targetTile.yIndex, swapTime); //this will move the clicked gamepiece to the target gamepiece position
+			targetPiece.Move(clickedTile.xIndex, clickedTile.yIndex, swapTime); //this will moved the target gamepiece to the clicked gamepiece position
+
+		} else { //readjusting feature
+
+			/* ******* This is for the readjustment feature ******* */
+			clickedPiece.Move (targetTile.xIndex, targetTile.yIndex, swapTime);
+
+
+			int DifferenceInX2 = Mathf.Abs (clickedTile.xIndex - targetTile.xIndex);
+			int DifferenceInY2 = Mathf.Abs (clickedTile.yIndex - targetTile.yIndex);
+			//Debug.Log (width - DifferenceInX2 + "," + DifferenceInY2);
+
+
+
+			//variable creating to hold the condition of right or left movement, right +1 and left -1
+			int movement = 0;
+			//check whether right movement or left movement will happen
+			if ((clickedTile.yIndex == targetTile.yIndex && clickedTile.xIndex > targetTile.xIndex) || (clickedTile.xIndex > targetTile.xIndex && clickedTile.yIndex < targetTile.yIndex) || (clickedTile.xIndex == targetTile.xIndex && clickedTile.yIndex < targetTile.yIndex) || (clickedTile.xIndex < targetTile.xIndex && clickedTile.yIndex < targetTile.yIndex)) {
+			
+				movement = 1;
+			} else {
+			
+				movement = -1;
+			}
+			//Debug.Log (movement);
+
+
+
+			//this loop takes care of the condition that if it is exchanged with the last element in x-axis or y-axis, it will change the position according to the movement
+			for (int j = 0; j < DifferenceInY2; j++) {
+			
+				if (targetTile.xIndex == width - 1 && movement == 1) { // if the movement is happening right and the target tile is at the right most column, then change the column to first one and bring it one row down
+
+
+					targetPiece.Move (0, targetTile.yIndex - 1, swapTime);
+
+
+				} else if (targetTile.xIndex == width - 1 && movement == -1) { //if the movement happening left and the target tile is at the right most column, then bring the target tile to left of its original position without changing its row
+
+
+					targetPiece.Move (targetTile.xIndex - 1, targetTile.yIndex, swapTime);
+
+
+				} else if (targetTile.xIndex == 0 && movement == -1) { //if the movement is happening left and the target tile is at the left most column, then bring the target tile to right most column and make it go up one row
+					//if (targetTile.xIndex == clickedTile.xIndex + 1) {
+
+
+					targetPiece.Move (width - 1, targetTile.yIndex + 1, swapTime);
+
+
+					//}
+				} else if (targetTile.xIndex == 0 && movement == 1) { // if the movement is happening right and the target tile is at the left most column, then bring the target tile to one column right keeping it in the same row
+					//if (targetTile.xIndex == clickedTile.xIndex + 1) {
+
+
+					targetPiece.Move (targetTile.xIndex + 1, targetTile.yIndex, swapTime);
+
+
+					//}
+				}
+
+			}
+
+
+
+
+			//to count the number of elements between the target and clicked gameobject
+			int count1 = 0; // for storing the number of row elements
+			int count2 = 0; // for storing the number of elements column-wise excluding the ones already stored in count1
+
+
+
+
+			for (int j = 0; j < (DifferenceInY2 - 1) * width; j++) {
+				count1++;
+			}
+			for (int i = 0; i < (width - DifferenceInX2); i++) {
+				count2++;
+			}
+			int totalCount = count1 + count2;//storing the number of elements between the target and clicked tile that needs to readjusts spaces
+			//Debug.Log ("Count: " + totalCount);
+
+
+
+
+			if (targetTile.xIndex != (width - 1) && movement == 1) { //checking whether the movement is happening right and if the targettile is not the extreme right tile
+				targetPiece.Move (targetTile.xIndex + 1, targetTile.yIndex, swapTime);
+			}
+			if (targetTile.xIndex != (width - 1) && movement == -1) {
+				targetPiece.Move (targetTile.xIndex - 1, targetTile.yIndex, swapTime);
+			}
+
+//		for (int j = 0; j < (DifferenceInY2 - 1) * width; j++) {
+//			if (movement == 1) {// if its a right movement
+//				GamePiece remainingPiece = m_allGamePieces [targetTile.xIndex+j, targetTile.yIndex];
+//			}
+//		}
+			//Debug.Log ("Clicked Position: " + clickedTile.xIndex + "," + clickedTile.yIndex);
+			//Debug.Log ("Target Position: " + targetTile.xIndex + "," + targetTile.yIndex);
+
+			//to hold the position of all the elements between clicked and target tiles
+			if (movement == 1) {
+
+				for (int m = clickedTile.yIndex + 1; m < targetTile.yIndex; m++) {
+					//Debug.Log("Rows no. in between: "+m);
+					for (int i = 0; i < width; i++) {
+						GamePiece remainingPiece = m_allGamePieces [i, m];
+
+						if (remainingPiece.xIndex == width - 1) {
+							remainingPiece.Move (0, remainingPiece.yIndex - 1, swapTime);
+						} else {
+							remainingPiece.Move (remainingPiece.xIndex + 1, remainingPiece.yIndex, swapTime);
+						}
+						//Debug.Log ("Inbetweeners: " + remainingPiece);
+						//Debug.Log("Inbetweeners: "+i+","+m);
+					}
+				}
+
+				if (clickedTile.yIndex != targetTile.yIndex) {
+					for (int i = clickedTile.xIndex; i >= 0; i--) {
+						//for (int k = clickedTile.yIndex; k < targetTile.yIndex; k++) {
+						GamePiece remainingPiece = m_allGamePieces [i, clickedTile.yIndex];
+						if (remainingPiece.xIndex == width - 1) {
+							remainingPiece.Move (0, remainingPiece.yIndex - 1, swapTime);
+						} else {
+							remainingPiece.Move (remainingPiece.xIndex + 1, remainingPiece.yIndex, swapTime);
+						}
+						//Debug.Log ("Clicked row: " + i + "," + clickedTile.yIndex);
+						//}
+					}
+
+					for (int j = targetTile.xIndex; j < width; j++) {
+						//for (int l = targetTile.yIndex; l > clickedTile.yIndex; l--) {
+						GamePiece remainingPiece = m_allGamePieces [j, targetTile.yIndex];
+						if (remainingPiece.xIndex == width - 1) {
+							remainingPiece.Move (0, remainingPiece.yIndex - 1, swapTime);
+						} else {
+							remainingPiece.Move (remainingPiece.xIndex + 1, remainingPiece.yIndex, swapTime);
+						}
+						//Debug.Log ("Target row: " + j + ","+targetTile.yIndex);
+						//}
+					}
+				} else {
+					for (int i = clickedTile.xIndex; i >= targetTile.xIndex; i--) {
+						GamePiece remainingPiece = m_allGamePieces [i, clickedTile.yIndex];
+						remainingPiece.Move (remainingPiece.xIndex + 1, remainingPiece.yIndex, swapTime);
+					}
+				}
+
+
+			}
+
+			if (movement == -1) {
+
+				for (int m = clickedTile.yIndex - 1; m > targetTile.yIndex; m--) {
+					//Debug.Log("Rows no. in between: "+m);
+					for (int i = 0; i < width; i++) {
+
+						GamePiece remainingPiece = m_allGamePieces [i, m];
+
+						if (remainingPiece.xIndex == 0) {
+							remainingPiece.Move (width - 1, remainingPiece.yIndex + 1, swapTime);
+						} else {
+							remainingPiece.Move (remainingPiece.xIndex - 1, remainingPiece.yIndex, swapTime);
+						}
+						//Debug.Log("Inbetweeners: "+i+","+m);
+					}
+				}
+
+				if (clickedTile.yIndex != targetTile.yIndex) {
+					for (int i = clickedTile.xIndex; i < width; i++) {
+
+						GamePiece remainingPiece = m_allGamePieces [i, clickedTile.yIndex];
+
+						if (remainingPiece.xIndex == 0) {
+							remainingPiece.Move (width - 1, remainingPiece.yIndex + 1, swapTime);
+						} else {
+							remainingPiece.Move (remainingPiece.xIndex - 1, remainingPiece.yIndex, swapTime);
+						}
+
+						//for (int k = clickedTile.yIndex; k < targetTile.yIndex; k++) {
+						//Debug.Log ("Clicked row: " + i + ","+clickedTile.yIndex);
+						//}
+					}
+
+					for (int j = targetTile.xIndex; j >= 0; j--) {
+						GamePiece remainingPiece = m_allGamePieces [j, targetTile.yIndex];
+
+						if (remainingPiece.xIndex == 0) {
+							remainingPiece.Move (width - 1, remainingPiece.yIndex + 1, swapTime);
+						} else {
+							remainingPiece.Move (remainingPiece.xIndex - 1, remainingPiece.yIndex, swapTime);
+						}
+						//for (int l = targetTile.yIndex; l > clickedTile.yIndex; l--) {
+						//Debug.Log ("Target row: " + j + ","+targetTile.yIndex);
+						//}
+					}
+				} else {
+					for (int i = clickedTile.xIndex; i <= targetTile.xIndex; i++) {
+						GamePiece remainingPiece = m_allGamePieces [i, clickedTile.yIndex];
+						remainingPiece.Move (remainingPiece.xIndex - 1, remainingPiece.yIndex, swapTime);
+					}
+				}
+
+
+			}
+
+		}
 
 	}
-
 
 	//to fill gamepiece array with preset list of gamepieces
 	void FillBoardFromList (List<GamePiece> gamePieces)
@@ -201,9 +430,6 @@ public class Board : MonoBehaviour {
 		//using queue because it uses first in and first out feature
 		Queue<GamePiece> unusedPieces = new Queue<GamePiece> (gamePieces);
 
-		//this is done to avoid running the loop infinitely
-		int maxIterations = 100;
-		int iterations = 0;
 
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
@@ -213,8 +439,6 @@ public class Board : MonoBehaviour {
 					//to get the next game piece from unused pieces using dequeue
 					m_allGamePieces[i,j]=unusedPieces.Dequeue();
 
-					//set the iteration value back to zero
-					iterations=0;
 
 				}
 
