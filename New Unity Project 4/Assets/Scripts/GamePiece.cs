@@ -56,6 +56,7 @@ public class GamePiece : MonoBehaviour { // this class will be very similar to t
 		if (!m_isMoving) { // if its  not moving, then only starting the coroutine
 
 			StartCoroutine (MoveRoutine (new Vector3 (destX, destY, 0), timeToMove));
+
 		}
 	}
 

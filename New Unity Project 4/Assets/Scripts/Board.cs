@@ -346,12 +346,24 @@ public class Board : MonoBehaviour {
 	Tile m_targetTile;
 
 	//to allow clicking to happen
-	public void ClickTile(Tile tile)//mouseDown
+	public void ClickTile (Tile tile)//mouseDown
 	{
+		for (int i = 0; i < width; i++) {
+				for (int j = 0; j < height; j++) {
+
+					SpriteRenderer spriteRenderer = m_allTiles [i, j].GetComponent<SpriteRenderer> ();
+					spriteRenderer.color = new Color (spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, 0);
+
+				}
+			}
+		
 		//Debug.Log(m_clickedTile+","+m_targetTile);
 		if (m_clickedTile == null) {
 			m_clickedTile = tile; //m_clickedtile will be equal to the tile object that we pass in this method only when no other tile is clicked
-		}
+			//Debug.Log ("CLICKED: " + m_clickedTile);
+			SpriteRenderer spriteRenderer = m_allTiles [m_clickedTile.xIndex, m_clickedTile.yIndex].GetComponent<SpriteRenderer> ();
+			spriteRenderer.color = new Color (spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, 1);
+		} 
 
 	}
 
@@ -361,10 +373,14 @@ public class Board : MonoBehaviour {
 		//Debug.Log("Clicked: "+m_clickedTile+" Target: "+m_targetTile);
 		if (m_clickedTile != null) { //checks if there is valid clicked tile, then target is set. This is taken from previous method of clicktile
 			m_targetTile = tile;
-			SwitchTiles (m_clickedTile, m_targetTile);
-			m_clickedTile = tile;
+			//SwitchTiles (m_clickedTile, m_targetTile);
+			//m_clickedTile = tile;
 
 			//m_targetTile = null;
+			SpriteRenderer spriteRenderer = m_allTiles [m_targetTile.xIndex, m_targetTile.yIndex].GetComponent<SpriteRenderer> ();
+			spriteRenderer.color = new Color (spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, 0.5f);
+
+
 		}
 
 
@@ -383,17 +399,33 @@ public class Board : MonoBehaviour {
 	{
 		//Debug.Log(m_clickedTile+","+m_targetTile);
 		if (m_clickedTile != null && m_targetTile != null) { //check to see if there are two valid tiles, switching will take place
-			//SwitchTiles(m_clickedTile, m_targetTile);
+			SwitchTiles(m_clickedTile, m_targetTile);
+			//Debug.Log("TARGETED: "+m_targetTile);
+			SpriteRenderer spriteRenderer = m_allTiles [m_targetTile.xIndex, m_targetTile.yIndex].GetComponent<SpriteRenderer> ();
+			spriteRenderer.color = new Color (spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, 1);
 		}
 
 		//when mouse button is released, its going to reset
 		m_clickedTile = null;
 		m_targetTile = null;
+
+
 	}
 
 	void Update ()
-	{
+	{	
 		
+		if (m_clickedTile == null && m_targetTile == null) {
+			
+			/*for (int i = 0; i < width; i++) {
+				for (int j = 0; j < height; j++) {
+
+					SpriteRenderer spriteRenderer = m_allTiles [i, j].GetComponent<SpriteRenderer> ();
+					spriteRenderer.color = new Color (spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, 0);
+
+				}
+			}*/
+		}
 
 	}
 
@@ -417,12 +449,12 @@ public class Board : MonoBehaviour {
 	{
 		GamePiece clickedPiece = m_allGamePieces [clickedTile.xIndex, clickedTile.yIndex]; //getting the clicked gamepiece
 		GamePiece targetPiece = m_allGamePieces [targetTile.xIndex, targetTile.yIndex]; //getting the target gamepiece
-
+		//Debug.Log(clickedTile+" ,"+targetTile);
 
 		if (readjusting == 0) {//swapping feature
 			//now to actually move it between the clicked and target gamepieces
-			clickedPiece.Move(targetTile.xIndex, targetTile.yIndex, swapTime); //this will move the clicked gamepiece to the target gamepiece position
-			targetPiece.Move(clickedTile.xIndex, clickedTile.yIndex, swapTime); //this will moved the target gamepiece to the clicked gamepiece position
+			clickedPiece.Move (targetTile.xIndex, targetTile.yIndex, swapTime); //this will move the clicked gamepiece to the target gamepiece position
+			targetPiece.Move (clickedTile.xIndex, clickedTile.yIndex, swapTime); //this will moved the target gamepiece to the clicked gamepiece position
 
 		} else { //readjusting feature
 
@@ -630,6 +662,9 @@ public class Board : MonoBehaviour {
 			}
 
 		}
+
+
+
 	}
 
 	//to fill gamepiece array with preset list of gamepieces
