@@ -7,21 +7,20 @@ using UnityEngine;
 
 public class Board : MonoBehaviour {
 
-
+	
 	//to determine the dimension of board
-	public int width;
-	public int height;
+	int width;
+	int height;
 
-	int minWidth=1;
+
+
+	int minWidth=2;
 	int maxWidth=10;
-	int minHeight=1;
+	int minHeight=2;
 	int maxHeight=10;
 
 
-	public void SlideChange (float someValue)
-	{
-		//Debug.Log(someValue);
-	}
+
 
 	//to set the border of from the edge of tilegroup
 	public float borderSize;
@@ -42,8 +41,70 @@ public class Board : MonoBehaviour {
 
 
 	// Use this for initialization
-	void Start () {
+	public void Start () {
+
+		//width=5;
+		//height=6;
+		width=height=10;
+		// initialising 2D array
+		m_allTiles = new Tile[maxWidth,maxHeight];
+
+		//intialising array
+		m_allGamePieces=new GamePiece[maxWidth,maxHeight];
+
+		// to run the setup tile method
+		SetupTiles();
+
+		//to setup the camera properly
+		SetupCamera();
+
+		//to fill the board with random dots
+		FillRandom();
+
+		//to assign boardshuffling
+		m_boardShuffler = GetComponent<BoardShuffler>();
+
+
+	}
+
+	//this is for reducing the size
+	public void SlideChange (float someValue)
+	{
 		
+		if (width > someValue) {
+			width =(int)someValue;
+
+			ShuffleBoard ();
+
+			GameObject[] destroyingItems = GameObject.FindGameObjectsWithTag ("Respawn");
+			foreach (GameObject destoryingItem in destroyingItems) {
+				GameObject.Destroy (destoryingItem);
+				//destoryingItem.transform.position=new Vector3(-100,-100,-10f);
+			}
+
+			// initialising 2D array
+			m_allTiles = new Tile[width, height];
+
+			//intialising array
+			m_allGamePieces = new GamePiece[width, height];
+
+			// to run the setup tile method
+			SetupTiles ();
+
+			//to setup the camera properly
+			SetupCamera ();
+
+			//to fill the board with random dots
+			FillRandom ();
+
+			//Application.LoadLevel(Application.loadedLevel);
+		} else {
+			GameObject[] destroyingItems = GameObject.FindGameObjectsWithTag ("Respawn");
+			foreach (GameObject destoryingItem in destroyingItems) {
+				GameObject.Destroy (destoryingItem);
+				//destoryingItem.transform.position=new Vector3(-100,-100,-10f);
+			}
+			width=(int)someValue;
 		// initialising 2D array
 		m_allTiles = new Tile[width,height];
 
@@ -61,9 +122,98 @@ public class Board : MonoBehaviour {
 
 		//to assign boardshuffling
 		m_boardShuffler = GetComponent<BoardShuffler>();
+			
+		}
+
+	}
+
+	public void SlideChange2 (float someValue)
+	{
+		
+		if (height > someValue) {
+			height = (int)someValue;
+
+			ShuffleBoard ();
+
+			GameObject[] destroyingItems = GameObject.FindGameObjectsWithTag ("Respawn");
+			foreach (GameObject destoryingItem in destroyingItems) {
+				GameObject.Destroy (destoryingItem);
+				//destoryingItem.transform.position=new Vector3(-100,-100,-10f);
+			}
+
+			// initialising 2D array
+			m_allTiles = new Tile[width, height];
+
+			//intialising array
+			m_allGamePieces = new GamePiece[width, height];
+
+			// to run the setup tile method
+			SetupTiles ();
+
+			//to setup the camera properly
+			SetupCamera ();
+
+			//to fill the board with random dots
+			FillRandom ();
+
+			//Application.LoadLevel(Application.loadedLevel);
+		} else {
+			GameObject[] destroyingItems = GameObject.FindGameObjectsWithTag ("Respawn");
+			foreach (GameObject destoryingItem in destroyingItems) {
+				GameObject.Destroy (destoryingItem);
+				//destoryingItem.transform.position=new Vector3(-100,-100,-10f);
+			}
+			height=(int)someValue;
+		// initialising 2D array
+		m_allTiles = new Tile[width,height];
+
+		//intialising array
+		m_allGamePieces=new GamePiece[width,height];
+
+		// to run the setup tile method
+		SetupTiles();
+
+		//to setup the camera properly
+		SetupCamera();
+
+		//to fill the board with random dots
+		FillRandom();
+
+		//to assign boardshuffling
+		m_boardShuffler = GetComponent<BoardShuffler>();
+			
+		}
+
+	}
+
+	void ClearPieceAt (int x, int y)
+	{
+		GamePiece pieceToClear = m_allGamePieces [x, y];
+
+		if (pieceToClear != null) {
+			m_allGamePieces [x, y] = null;
+			Destroy (pieceToClear.gameObject);
+		}
+	}
+
+	void ClearPieceAt (List<GamePiece> gamePieces)
+	{
+		foreach (GamePiece piece in gamePieces) {
+			ClearPieceAt(piece.xIndex, piece.yIndex);
+		}
 	}
 
 
+	void ClearBoard()
+	{
+		for(int i=0; i<width; i++)
+		{
+			for(int j=0; j<height; j++)
+			{
+				ClearPieceAt(i,j);
+			}
+		}
+	}
 
 	//creating a method to set up tile grid
 	void SetupTiles()
@@ -76,6 +226,9 @@ public class Board : MonoBehaviour {
 
 				//rename the object when we instatiate it
 				tile.name = "Tile(" + i + "," + j + ")";
+
+				//putting a tag for safety
+				//tile.gameObject.tag="Respawn";
 
 				//to store the array in 2D array, we are grabbing the tile component
 				m_allTiles [i, j] = tile.GetComponent<Tile> ();
@@ -158,6 +311,40 @@ public class Board : MonoBehaviour {
 		}
 
 	}
+
+	GameObject GetRandomGamePiece()
+    {
+        int randomIdx = Random.Range(0, gamePiecePrefabs.Length);
+
+        return gamePiecePrefabs[randomIdx];
+    }
+
+	GamePiece FillRandomAt(int x, int y, int falseYOffset = 0, float moveTime = 0.1f)
+    {
+        GameObject randomPiece = Instantiate(GetRandomGamePiece(), Vector3.zero, Quaternion.identity) as GameObject;
+
+        if (randomPiece != null)
+        {
+            randomPiece.GetComponent<GamePiece>().Init(this);
+            PlaceGamePiece(randomPiece.GetComponent<GamePiece>(), x, y);
+
+            if (falseYOffset != 0)
+            {
+                randomPiece.transform.position = new Vector3(x, y + falseYOffset, 0);
+                randomPiece.GetComponent<GamePiece>().Move(x, y, moveTime);
+            }
+
+
+            randomPiece.transform.parent = transform;
+            return randomPiece.GetComponent<GamePiece>();
+        }
+        return null;
+    }
+
+
+
+
+
 
 	//variables to make the movements using mouse
 	Tile m_clickedTile;
@@ -423,7 +610,7 @@ public class Board : MonoBehaviour {
 	}
 
 	//to fill gamepiece array with preset list of gamepieces
-	void FillBoardFromList (List<GamePiece> gamePieces)
+	public void FillBoardFromList (List<GamePiece> gamePieces)
 	{
 
 		//converting gamepieces to different collection structure
@@ -464,5 +651,12 @@ public class Board : MonoBehaviour {
 		m_boardShuffler.MovePieces(m_allGamePieces, swapTime);
 
 
+	}
+
+
+
+	void Update ()
+	{
+	//Debug.Log(width);
 	}
 }
