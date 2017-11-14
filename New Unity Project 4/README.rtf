@@ -62,6 +62,21 @@
 \b0 This script controls the placements and changing of invisible grids and positions for the GamePiece.cs scripted elements and also control the mouse interactions on the grid.\
 \
 
+\b HOW I APPROACHED THE PROBLEM (BEHIND THE SCENES):\
+
+\b0 Broke down the different elements that were required, and worked on them modularly:\
+	i. Making of grid systems\
+	ii. Placing game objects that will be controlled by the users i.e. the visual tiles.\
+	iii. Created a simple swapping mechanism with static number of grid dimension like the match3 games.\
+	iv. Created the reorder mechanism with static grid dimensions like the reorder of app icons on iPhone.\
+	v. Created a random generator where the random generator will fill up the tiles randomly with existing elements on the board that are currently present.\
+	vi. Created a mechanism to change the dimensions of grid in real time i.e. at runtime without restarting the project.\
+	vii. Attached slider to control the dynamic grid dimension.\
+	viii. Created a system to make the swapping and reordering mechanism work with the changing grid dimension.\
+	ix. Created a pattern to add and remove game objects according to the changing grid dimensions i.e. With the increase in dimension, the elements will be added and decrease in dimension will remove it.\
+	x. Camera system also setup to keep the overall grid/tile dimension to fit the screen.\
+\
+
 \b NOTES:\
 
 \b0 1. The code is commented in many regions for better understanding. If there is any confusion and or need any clarifications, contact me via email: sandyloisa@gmail.com specifying the method name or line number(s) of any particular script.\
