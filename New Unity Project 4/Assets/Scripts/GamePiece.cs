@@ -22,13 +22,7 @@ public class GamePiece : MonoBehaviour { // this class will be very similar to t
 	void Update () {
 
 
-		/*
-		if (Input.GetKeyDown (KeyCode.RightArrow)) {
-			Move ((int)transform.position.x + 2, (int)transform.position.y, 0.5f);
-		}
-		if (Input.GetKeyDown (KeyCode.LeftArrow)) {
-			Move ((int)transform.position.x - 2, (int)transform.position.y, 0.5f);
-		}*/
+		
 	}
 
 	//pass reference to the board that it created the game piece
@@ -106,56 +100,5 @@ public class GamePiece : MonoBehaviour { // this class will be very similar to t
 		m_isMoving=false; // it is falsed because now its not moving anymore
 
 	}
-
-
-	bool m_isMoving_CLICKED=false;
-
-	IEnumerator MoveRoutine_CLICKED(Vector3 destination, float timeToMove)
-	{
-
-		//to store the start position
-		Vector3 startPosition_CLICKED = transform.position;
-
-		bool reachedDestination_CLICKED = false; // to check if the target dot has actually reached the destination grid. we will keep on lerping gamepiece towards destination and when it reaches near the desination, it will be set to true
-
-		float elapsedTime_CLICKED = 0f; // to hold the time passed while moving
-
-		m_isMoving_CLICKED = true; //this is set to true because the movement is already invoked now
-		while (!reachedDestination_CLICKED) {
-
-			//check to see if it reached the destination
-			if (Vector3.Distance (transform.position, destination) < 0.01f) { //0.01 is almost near the final destination
-				reachedDestination_CLICKED=true; // thus once it reaches the destination position, the boolean value will turn to true to come out of the loop
-
-				/*transform.position=destination; //this will put the gameobject's final position exactly to the destination position
-				// to set xindex and yindex once reached the destination
-				SetCoord((int)destination.x, (int)destination.y);*/
-
-				if (m_board != null) {
-					m_board.PlaceGamePiece (this, (int)destination.x, (int)destination.y);
-				}
-
-				break; // breaking without running the next lines because it already reached the destination now and is not really needed
-
-			}
-
-			// if not reached the destination, it will keep an ongoing timer to check the amount of time passed
-			elapsedTime_CLICKED +=Time.deltaTime; //time.deltatime is the time in seconds that it took the last frame to runs
-
-			float t = Mathf.Clamp(elapsedTime_CLICKED*10 / timeToMove, 0f, 1f); //t=1 when reached to the end position and t=0 when starts
-
-
-			t=t*t*t*(6*t*t-15*t+10); // this is just to get a very smooth transition of position during the lerping. Very good thing
-
-			transform.position = Vector3.Lerp (startPosition_CLICKED, destination,t); //to make it lerp from startposition to end position and t is used to control lerping
-			//when t=0, it puts in the startposition and when t=1, it puts in the destination position
-
-			yield return null; // this tells the engine to wait until the next frame to resume execution of the while loop
-		}
-
-		m_isMoving_CLICKED=false; // it is falsed because now its not moving anymore
-
-	}
-
 
 }

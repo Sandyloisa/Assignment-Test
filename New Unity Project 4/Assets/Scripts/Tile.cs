@@ -52,27 +52,8 @@ public class Tile : MonoBehaviour {
 	{
 		if (m_board != null) {
 			m_board.DragToTile (this);
-
-
 		}
-
-
 	}
-
-
-
-	void OnMouseExit ()
-	{
-		
-	}
-
-	void OnMouseOver()
-	{
-		
-	}
-
-
-
 
 	//if targetTile is adjacent to checkedTile, then switch or swap takes place. clickedTile and targetTile is cleared once the mouse button is released
 	void OnMouseUp()
