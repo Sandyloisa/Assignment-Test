@@ -40,12 +40,19 @@ public class Board : MonoBehaviour {
 	BoardShuffler m_boardShuffler;
 
 
+
+
+
 	// Use this for initialization
 	public void Start () {
 
 		//width=5;
 		//height=6;
 		width=height=10;
+
+		//width= Random.Range(minWidth, maxWidth+1);
+	//	height=Random.Range(minHeight, maxHeight+1);
+
 		// initialising 2D array
 		m_allTiles = new Tile[maxWidth,maxHeight];
 
@@ -373,8 +380,8 @@ public class Board : MonoBehaviour {
 		//Debug.Log("Clicked: "+m_clickedTile+" Target: "+m_targetTile);
 		if (m_clickedTile != null) { //checks if there is valid clicked tile, then target is set. This is taken from previous method of clicktile
 			m_targetTile = tile;
-			//SwitchTiles (m_clickedTile, m_targetTile);
-			//m_clickedTile = tile;
+		//	SwitchTiles (m_clickedTile, m_targetTile);
+			//m_clickedTile = m_targetTile;
 
 			//m_targetTile = null;
 			SpriteRenderer spriteRenderer = m_allTiles [m_targetTile.xIndex, m_targetTile.yIndex].GetComponent<SpriteRenderer> ();

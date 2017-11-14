@@ -34,10 +34,7 @@ public class Tile : MonoBehaviour {
 	}
 
 
-	Vector3 screenPoint;
-	Vector3  offset;
-	Vector3  curScreenPoint;
-	Vector3 curPosition;
+
 	//clicking a tile and setting it as an active one
 	void OnMouseDown()
 	{

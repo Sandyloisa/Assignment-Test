@@ -48,7 +48,6 @@
   <ItemGroup>
      <Compile Include="Assets\Scripts\Board.cs" />
      <Compile Include="Assets\Scripts\BoardShuffler.cs" />
-     <Compile Include="Assets\Scripts\DraggingWork.cs" />
      <Compile Include="Assets\Scripts\GamePiece.cs" />
      <Compile Include="Assets\Scripts\RestartingBoard.cs" />
      <Compile Include="Assets\Scripts\Tile.cs" />
